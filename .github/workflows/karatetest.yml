@@ -1,0 +1,33 @@
+name: Karate API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Run Karate Smoke Tests
+        run: mvn test -Dkarate.options="--tags @smoke"
+
+      - name: Run Karate Regression Tests
+        run: mvn test -Dkarate.options="--tags @regression"
+
+      - name: Upload Karate Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: karate-reports
+          path: target/karate-reports/
